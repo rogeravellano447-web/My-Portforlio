@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roger Vince // Portfolio</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+        /* --- Design Token Architecture --- */
+        :root {
+            --bg-cream: #f4f0ea;
+            --forest-green: #2b4236;
+            --ochre-gold: #f2a922;
+            --terracotta: #df6e41;
+            --text-dark: #1e2421;
+            --text-light: #f4f0ea;
+            --font-serif: 'DM Serif Display', serif;
+            --font-sans: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'Space Mono', monospace;
+            --cb-smooth: cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-cream);
+            color: var(--text-dark);
+            font-family: var(--font-sans);
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        /* --- Modern Fluid Custom Cursor --- */
+        .custom-cursor {
+            width: 8px;
+            height: 8px;
+            background: var(--terracotta);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+        .custom-cursor-outline {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--forest-green);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: transform 0.08s linear, width 0.3s var(--cb-smooth), height 0.3s var(--cb-smooth), border-color 0.3s;
+        }
+        /* Cursor hover scaling rules */
+        body.cursor-hovering .custom-cursor {
+            width: 12px;
+            height: 12px;
+            background-color: var(--ochre-gold);
+        }
+        body.cursor-hovering .custom-cursor-outline {
+            width: 48px;
+            height: 48px;
+            border-color: var(--terracotta);
+            background-color: rgba(223, 110, 65, 0.05);
+        }
+
+        /* --- Scroll Reveal Animations --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s var(--cb-smooth), transform 0.8s var(--cb-smooth);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Custom Scrollbar --- */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-cream); }
+        ::-webkit-scrollbar-thumb { background: var(--forest-green); border-radius: 4px; }
+
+        /* --- Navigation --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 8%;
+            z-index: 1000;
+            background: rgba(244, 240, 234, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(43, 66, 54, 0.05);
+        }
+
+        .nav-logo {
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            color: var(--forest-green);
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.3s var(--cb-smooth);
+        }
+        .nav-logo:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 3rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            font-size: 0.95rem;
+            position: relative;
+            padding: 4px 0;
+            transition: color 0.3s ease;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--terracotta);
+            transition: width 0.3s var(--cb-smooth);
+        }
+        .nav-links a:hover { color: var(--terracotta); }
+        .nav-links a:hover::after { width: 100%; }
+
+        .btn-cta {
+            background-color: var(--ochre-gold);
+            color: var(--text-dark);
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.3s var(--cb-smooth), box-shadow 0.3s var(--cb-smooth), background-color 0.3s;
+        }
+        .btn-cta:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(242, 169, 34, 0.4);
+            background-color: #fcae1e;
+        }
+
+        /* --- Hero Poster Section --- */
+        .hero-poster {
+            background-color: var(--forest-green);
+            min-height: 90vh;
+            margin-top: 5rem;
+            padding: 4rem 8%;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sparkle-icon {
+            position: absolute;
+            color: var(--ochre-gold);
+            font-size: 2rem;
+            animation: pulse 3s infinite ease-in-out;
+            user-select: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.6; }
+            50% { transform: scale(1.2) rotate(45deg); opacity: 1; }
+        }
+
+        .poster-text-side {
+            z-index: 5;
+        }
+
+        .editorial-title {
+            font-family: var(--font-serif);
+            font-size: 6.5rem;
+            color: #ece4db;
+            line-height: 0.9;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            margin-bottom: 2rem;
+            animation: slideInLeft 1s var(--cb-smooth);
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .manifesto-box {
+            background-color: var(--terracotta);
+            color: var(--text-light);
+            padding: 1.5rem;
+            border-radius: 12px;
+            max-width: 420px;
+            font-size: 0.95rem;
+            box-shadow: 5px 5px 0px var(--ochre-gold);
+            transform: rotate(-1deg);
+            transition: transform 0.3s var(--cb-smooth), box-shadow 0.3s var(--cb-smooth);
+            animation: slideInLeft 1.2s var(--cb-smooth);
+        }
+        .manifesto-box:hover {
+            transform: rotate(0deg) scale(1.02);
+            box-shadow: 8px 8px 0px var(--bg-cream);
+        }
+
+        .poster-graphic-side {
+            position: relative;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .stacked-wordmark {
+            font-family: var(--font-serif);
+            font-size: 7.5rem;
+            line-height: 0.85;
+            text-transform: uppercase;
+            font-weight: 900;
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(244, 240, 234, 0.15);
+            position: absolute;
+            right: 0;
+            user-select: none;
+        }
+        .stacked-wordmark div {
+            transition: transform 0.4s var(--cb-smooth), color 0.4s;
+        }
+        .stacked-wordmark div:hover {
+            transform: translateX(-15px);
+            color: rgba(244, 240, 234, 0.8);
+        }
+        .stacked-wordmark .filled-row {
+            color: var(--ochre-gold);
+            -webkit-text-stroke: none;
+        }
+        .stacked-wordmark .filled-row:hover {
+            color: var(--terracotta);
+        }
+
+        .hero-profile-wrapper {
+            position: relative;
+            z-index: 2;
+            width: 320px;
+            height: 400px;
+            background: linear-gradient(135deg, var(--terracotta), var(--ochre-gold));
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 15px 15px 0 var(--ochre-gold);
+            transition: transform 0.5s var(--cb-smooth), box-shadow 0.5s var(--cb-smooth);
+            animation: fadeInRight 1.2s var(--cb-smooth);
+        }
+        .hero-profile-wrapper:hover {
+            transform: translate(-5px, -5px) rotate(1deg);
+            box-shadow: 22px 22px 0 var(--terracotta);
+        }
+
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* --- Native Image Background Removal System --- */
+        .hero-profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            mix-blend-mode: luminosity; 
+            filter: contrast(1.15) brightness(1.05);
+            transition: transform 0.5s var(--cb-smooth), mix-blend-mode 0.5s;
+        }
+        .hero-profile-wrapper:hover .hero-profile-image {
+            transform: scale(1.05);
+            mix-blend-mode: normal;
+        }
+
+        .floating-badge {
+            position: absolute;
+            background: var(--ochre-gold);
+            color: var(--text-dark);
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: bold;
+            z-index: 10;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: transform 0.3s var(--cb-smooth);
+        }
+        .hero-profile-wrapper:hover .floating-badge {
+            transform: scale(1.1) translateY(-5px);
+        }
+
+        /* --- Bio & Contact Section --- */
+        .intro-section {
+            padding: 8rem 8%;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 6rem;
+        }
+
+        .intro-left h2 {
+            font-family: var(--font-serif);
+            font-size: 4.5rem;
+            color: var(--forest-green);
+            line-height: 1.1;
+            margin-bottom: 2rem;
+        }
+
+        .intro-left p {
+            font-size: 1.15rem;
+            color: #4a5550;
+            margin-bottom: 3rem;
+            max-width: 550px;
+        }
+
+        .btn-social-link {
+            background-color: var(--terracotta);
+            color: var(--text-light);
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 5px 0 var(--forest-green);
+            transition: transform 0.2s var(--cb-smooth), box-shadow 0.2s var(--cb-smooth);
+        }
+        .btn-social-link span {
+            transition: transform 0.3s var(--cb-smooth);
+        }
+        .btn-social-link:hover {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 var(--forest-green);
+        }
+        .btn-social-link:hover span {
+            transform: translateX(6px);
+        }
+
+        .contact-panel {
+            background-color: var(--forest-green);
+            color: var(--text-light);
+            padding: 3rem;
+            border-radius: 24px;
+            position: relative;
+            transition: transform 0.4s var(--cb-smooth), box-shadow 0.4s var(--cb-smooth);
+        }
+        .contact-panel:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 35px rgba(43, 66, 54, 0.15);
+        }
+
+        .contact-panel h3 {
+            font-family: var(--font-serif);
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-row {
+            margin-bottom: 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            display: flex;
+            flex-direction: column;
+            border-left: 0px solid var(--ochre-gold);
+            padding-left: 0;
+            transition: border-left 0.3s var(--cb-smooth), padding-left 0.3s var(--cb-smooth);
+        }
+        .contact-panel:hover .info-row {
+            border-left: 3px solid var(--ochre-gold);
+            padding-left: 10px;
+        }
+
+        .info-row span:first-child {
+            color: var(--ochre-gold);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            margin-bottom: 0.2rem;
+        }
+
+        .inline-social-box {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2.5rem;
+        }
+
+        .social-pill {
+            flex: 1;
+            text-align: center;
+            padding: 0.8rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: transform 0.3s var(--cb-smooth), filter 0.3s, box-shadow 0.3s;
+        }
+        .social-pill.fb { background: #1877f2; color: white; box-shadow: 0 4px 10px rgba(24, 119, 242, 0.2); }
+        .social-pill.ig { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%); color: white; box-shadow: 0 4px 10px rgba(225, 48, 108, 0.2); }
+        .social-pill.fi { background: #1dbf73; color: white; box-shadow: 0 4px 10px rgba(29, 191, 115, 0.2); }
+        .social-pill:hover { 
+            transform: translateY(-4px) scale(1.04); 
+            filter: brightness(1.15); 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        /* --- Split Details Matrix --- */
+        .details-matrix {
+            padding: 4rem 8% 8rem 8%;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 6rem;
+        }
+
+        .matrix-column-title {
+            font-family: var(--font-serif);
+            font-size: 2.8rem;
+            color: var(--forest-green);
+            margin-bottom: 3rem;
+            border-bottom: 2px solid var(--forest-green);
+            padding-bottom: 0.5rem;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 2.5rem;
+            margin-bottom: 3rem;
+            transition: transform 0.3s var(--cb-smooth);
+        }
+        .timeline-item::before {
+            content: '✦';
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--terracotta);
+            font-size: 1.2rem;
+            transition: transform 0.4s var(--cb-smooth);
+        }
+        .timeline-item:hover {
+            transform: translateX(8px);
+        }
+        .timeline-item:hover::before {
+            transform: scale(1.3) rotate(90deg);
+            color: var(--ochre-gold);
+        }
+
+        .timeline-date {
+            font-family: var(--font-mono);
+            font-weight: bold;
+            color: var(--terracotta);
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .timeline-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .timeline-desc {
+            color: #5c6661;
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Skill Pills Grid Layout */
+        .skills-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        .skill-group-title {
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--forest-green);
+        }
+
+        .pill-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+
+        .badge-pill {
+            background-color: #e5ded4;
+            color: var(--text-dark);
+            padding: 0.6rem 1.4rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: transform 0.3s var(--cb-smooth), background-color 0.3s, color 0.3s;
+        }
+        .badge-pill:hover {
+            background-color: var(--forest-green);
+            color: var(--text-light);
+            transform: translateY(-3px) scale(1.05);
+        }
+
+        /* --- Footer Section --- */
+        footer {
+            background-color: var(--forest-green);
+            color: var(--text-light);
+            padding: 5rem 8% 3rem 8%;
+        }
+
+        .footer-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(244, 240, 234, 0.1);
+            padding-bottom: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-logo {
+            font-family: var(--font-serif);
+            font-size: 2.5rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: rgba(244, 240, 234, 0.7);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s ease, transform 0.3s;
+            display: inline-block;
+        }
+        .footer-links a:hover { 
+            color: var(--ochre-gold); 
+            transform: translateY(-2px);
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: rgba(244, 240, 234, 0.4);
+        }
+
+        /* --- Responsive Viewports --- */
+        @media (max-width: 1024px) {
+            .hero-poster, .intro-section, .details-matrix {
+                grid-template-columns: 1fr;
+                gap: 4rem;
+            }
+            .editorial-title { font-size: 4.5rem; }
+            .stacked-wordmark { display: none; }
+            .nav-links { display: none; }
+            .custom-cursor, .custom-cursor-outline { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Native Dynamic Interactive Cursor Layout -->
+    <div class="custom-cursor" id="cursor"></div>
+    <div class="custom-cursor-outline" id="cursor-out"></div>
+
+    <!-- Top Navigation Interface -->
+    <nav>
+        <a href="#" class="nav-logo interactive-node">Roger Vince</a>
+        <ul class="nav-links">
+            <li><a href="#about" class="interactive-node">About me</a></li>
+            <li><a href="#matrix" class="interactive-node">Capabilities</a></li>
+            <li><a href="#projects" class="interactive-node">Work Repositories</a></li>
+        </ul>
+        <a href="https://www.fiverr.com/s/zWeEE2e" target="_blank" class="btn-cta interactive-node">Get in touch!</a>
+    </nav>
+
+    <!-- Structural Hero Canvas Poster -->
+    <section class="hero-poster">
+        <div class="sparkle-icon" style="top: 15%; left: 5%;">✦</div>
+        <div class="sparkle-icon" style="bottom: 10%; left: 45%; color: var(--terracotta);">✦</div>
+        
+        <!-- Text Node Framework -->
+        <div class="poster-text-side">
+            <h1 class="editorial-title">PORT<br>FOLIO</h1>
+            <div class="manifesto-box interactive-node">
+                Deploying structural logic, scalable software pipelines, and modern visual identities. Merging precision execution with high aesthetics.
+            </div>
+        </div>
+
+        <!-- Visual Art Canvas -->
+        <div class="poster-graphic-side">
+            <div class="stacked-wordmark">
+                <div class="interactive-node">DESIGN</div>
+                <div class="filled-row interactive-node">CODE</div>
+                <div class="interactive-node">LOGIC</div>
+                <div class="interactive-node">BUILD</div>
+            </div>
+            
+            <div class="hero-profile-wrapper interactive-node">
+                <img src="473609612_925882255959434_247848732937600261_n.jpg" alt="Roger Vince Avellano" class="hero-profile-image">
+                <div class="floating-badge" style="top: 20px; left: -20px; background: var(--ochre-gold);">DEV & DESIGN</div>
+                <div class="floating-badge" style="bottom: 40px; right: -10px; background: var(--bg-cream);">PH // 2026</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Introduction Matrix Component -->
+    <section class="intro-section reveal" id="about">
+        <div class="intro-left">
+            <h2>Hello,<br>I’m Roger Vince !</h2>
+            <p>
+                I am an information technology developer and digital creator based in the Philippines. I focus on developing clean software applications, robust database schemas, and crafting visual identities with striking design frameworks.
+            </p>
+            <a href="https://www.fiverr.com/s/zWeEE2e" target="_blank" class="btn-social-link interactive-node">
+                hire me on fiverr <span>➔</span>
+            </a>
+        </div>
+
+        <!-- Contact Context Panel Block -->
+        <div class="contact-panel reveal">
+            <h3>Contact info</h3>
+            
+            <div class="info-row">
+                <span>Core Hub</span>
+                <span>Nueva Ecija, Philippines</span>
+            </div>
+
+            <div class="info-row">
+                <span>Primary Architecture</span>
+                <span>Information Technology Ecosystems</span>
+            </div>
+
+            <div class="inline-social-box">
+                <a href="https://www.facebook.com/roger.vince.avellan0" target="_blank" class="social-pill fb interactive-node">FB // Facebook</a>
+                <a href="https://www.instagram.com/ro_ogero" target="_blank" class="social-pill ig interactive-node">IG // Instagram</a>
+                <a href="https://www.fiverr.com/s/zWeEE2e" target="_blank" class="social-pill fi interactive-node">FI // Fiverr</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Pipeline & Capabilities Array Layout -->
+    <section class="details-matrix" id="matrix">
+        <!-- Structural Project Architecture Logs -->
+        <div class="reveal" id="projects">
+            <h2 class="matrix-column-title">Production Repositories</h2>
+            
+            <div class="timeline-item interactive-node">
+                <div class="timeline-date">ID: 001 — Active</div>
+                <div class="timeline-title">Web Management Ecosystem</div>
+                <div class="timeline-desc">Optimized room occupancy matrix layouts and transactional logging systems designed with responsive frontends and relational processing.</div>
+            </div>
+
+            <div class="timeline-item interactive-node">
+                <div class="timeline-date">ID: 002 — Stable</div>
+                <div class="timeline-title">Discrete Mathematics Toolkit</div>
+                <div class="timeline-desc">A custom computational framework automating discrete sequences and logic structures with optimized programmatic accuracy.</div>
+            </div>
+
+            <div class="timeline-item interactive-node">
+                <div class="timeline-date">ID: 003 — Asset Build</div>
+                <div class="timeline-title">Visual Identity & Graphic Systems</div>
+                <div class="timeline-desc">High-fidelity layout design, typographic hierarchy structures, and visual elements optimized for digital branding workflows.</div>
+            </div>
+        </div>
+
+        <!-- Skills Cloud System Matrix -->
+        <div class="skills-grid reveal">
+            <h2 class="matrix-column-title">Technical Capabilities</h2>
+
+            <div>
+                <div class="skill-group-title">// Core Software Engineering</div>
+                <div class="pill-cloud">
+                    <span class="badge-pill interactive-node">Java [OOP]</span>
+                    <span class="badge-pill interactive-node">C++</span>
+                    <span class="badge-pill interactive-node">Python</span>
+                    <span class="badge-pill interactive-node">SQL</span>
+                    <span class="badge-pill interactive-node">Relational Databases</span>
+                </div>
+            </div>
+
+            <div>
+                <div class="skill-group-title">// UI Construction</div>
+                <div class="pill-cloud">
+                    <span class="badge-pill interactive-node">HTML5</span>
+                    <span class="badge-pill interactive-node">CSS3 Architecture</span>
+                    <span class="badge-pill interactive-node">JavaScript</span>
+                    <span class="badge-pill interactive-node">Fluid Layouts</span>
+                    <span class="badge-pill interactive-node">Responsive Assembly</span>
+                </div>
+            </div>
+
+            <div>
+                <div class="skill-group-title">// Design & Brand Direction</div>
+                <div class="pill-cloud">
+                    <span class="badge-pill interactive-node">Digital Art Production</span>
+                    <span class="badge-pill interactive-node">Typography Hierarchies</span>
+                    <span class="badge-pill interactive-node">Vector Graphics</span>
+                    <span class="badge-pill interactive-node">Visual Identity</span>
+                    <span class="badge-pill interactive-node">UI / UX Layouts</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Structural Layout System Footer -->
+    <footer>
+        <div class="footer-top">
+            <div class="footer-logo">Roger Vince.</div>
+            <div class="footer-links">
+                <a href="https://www.facebook.com/roger.vince.avellan0" target="_blank" class="interactive-node">FB//</a>
+                <a href="https://www.instagram.com/ro_ogero" target="_blank" class="interactive-node">IG//</a>
+                <a href="https://www.fiverr.com/s/zWeEE2e" target="_blank" class="interactive-node">FI//</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>LOC // MNL, PHILIPPINES</div>
+            <div>&copy; 2026 ARCHITECTURE RENDERING // ALL RIGHTS RESERVED</div>
+        </div>
+    </footer>
+
+    <!-- Scripting Execution System -->
+    <script>
+        // Dual Magnetic Pointer Trailing Engine
+        const cursor = document.getElementById('cursor');
+        const cursorOut = document.getElementById('cursor-out');
+        const hoverNodes = document.querySelectorAll('.interactive-node');
+
+        window.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+
+            cursor.style.left = `${posX}px`;
+            cursor.style.top = `${posY}px`;
+
+            cursorOut.animate({
+                left: `${posX}px`,
+                top: `${posY}px`
+            }, { duration: 250, fill: "forwards" });
+        });
+
+        hoverNodes.forEach(node => {
+            node.addEventListener('mouseenter', () => {
+                document.body.classList.add('cursor-hovering');
+            });
+            node.addEventListener('mouseleave', () => {
+                document.body.classList.remove('cursor-hovering');
+            });
+        });
+
+        // Dynamic Scroll Intersection Observer Engine
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+    </script>
+</body>
+</html>
